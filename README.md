@@ -20,10 +20,10 @@ This mod may also interfere with your WiFi or Bluetooth. I haven't encountered a
 
 ## Table of contents
 - [RGBDeck](#rgbdeck)
-  - [Introduction](#introduction)
   - [Table of contents](#table-of-contents)
+  - [Introduction](#introduction-and-power-supply-discussion)
   - [What is needed](#what-is-needed)
-  - [Choice of the Microcontroller](#choice-of-microcontroller)
+  - [Choice of the Microcontroller](#choice-of-the-microcontroller)
   - [Connecting the Microcontroller to your Steam Deck](#connecting-the-microcontroller-to-your-steam-deck)
   - [Adding the addressable LEDs](#adding-the-addressable-leds)
 
@@ -45,7 +45,8 @@ Vsys on the Steam Deck is designed to be around 8.7 volts. The Steam Deck APU (i
 - Tools to open the Steam Deck (Philips Driver size 0 and a plastic spudger)
 - Soldering iron. Preferibly with a small tip since the pads are very small
 
-## Choice of the microcontroller to interface the WS2812 LEDs via I2C
+## Choice of the microcontroller 
+(to interface the WS2812 LEDs via I2C)
 
 Since the WS2812 LEDs cannot be addressed via I2C directly, we need an additional device as an „I2C-bridge“. In the projects mentioned above, microcontrollers were used for this job. For this project, a microcontroller was chosen according to the following criteria:
 * Widely available
