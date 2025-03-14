@@ -30,10 +30,15 @@ This mod may also interfere with your WiFi or Bluetooth. I haven't encountered a
 ## Introduction and power supply discussion
 
 The Steam Deck provides an accessible I2C interface, which can be used to attach and control additional devices (Such as Haptic Motor Drivers, [Link](https://github.com/dawidmpunkt/rumble-for-steamdeck)).
+
 There have been attempts to attach RGB controllers to the steam Deck in order to control the RGB LED via Software from the Steam Deck ([Link](https://www.reddit.com/r/SteamDeck/comments/10uzoj6/openrgbdeck_lives_rgbdeck_mod_with_jsaux_cover/)). This project failed due to issues with the power supply, which either damaged the board ([LINK](https://old.reddit.com/r/SteamDeck/comments/110ca10/warning_about_the_rgbdeck_mod_from_last_weekavoid/)) or caused the Deck not to boot ([LINK](https://github.com/WUBBSY/RGBDeck/issues/1#issuecomment-1653933577)). The prior issue was due to the attempt to connect the RGB LEDs to the 5V rail, used to provide power to the controller boards. 
+
 The 5V rail on the Steam Decks controller board is not designed to power additional high current devices (like RGB LEDs), thus resulting in components failing. The latter issue was due to the fact, that the external device was directly connected to the battery, thus (most likely) causing issues with the charging controller, which caused the Deck not to start up. 
+
 Since it is (a) possible to either power the LEDs via an external power source (Battery) and (b) to attach the RGB controller to the Vsys rail, the issues above can be considered as solved (as demonstrated in the rumble-for-steamdeck project). 
+
 In case of the Vsys rail, power can be drawn from close to the Vsys output of the MAX77961 Battery Charging IC. According to the Datasheet of the charging IC ([LINK](https://www.analog.com/en/products/max77961.html)), it can output up to 10 A of current (if proper cooling is provided). 
+
 Vsys on the Steam Deck is designed to be around 8.7 volts. The Steam Deck APU (if not modified in software) draws around 15 watts of power (around 2 amps of current at 8.7 volts) (according to gamescope data). The display draws around 5-6 Watts (< 1 amp). This should give enough headroom to power additional devices.  
 
 ## What is needed
