@@ -1,24 +1,17 @@
 # RGBDeck
 
-> <h1 style="color:#F45B69; font-weight:bold; margin-top:40px">Warning!</h1>  
-> 
-> <span style="color:#F45B69">**We have encountered a problem with the power delivery of the internal USB-Interface of the Steam Deck, which can (and has) caused a catastrophic failure of a power IC! This causes the controller of the  Steam Deck to no longer function!**</span>  
-> [CalcProgrammer1's Post](https://old.reddit.com/r/SteamDeck/comments/110ca10/warning_about_the_rgbdeck_mod_from_last_weekavoid/)
-> 
-> <h2 style="color:#F45B69; font-weight:bold; margin-bottom:40px">We highly recommend to not do this mod at the moment until we find a workaround!</h2>
+**RGB Lighting for the Valve Steam Deck** - 8 bit Microcontroller version (work in progress)
 
-**RGB Lighting for the Valve Steam Deck**
+Forked from WUBBSY - see here for the original Adafruit Trinket M0 version: https://github.com/WUBBSY/RGBDeck.
 
-This Project uses a small microcontroller (**Adafruit Trinket M0**) and some **WS2812B** LEDs (aka. NeoPixels or ARGB) to add RGB lighting to the back of the Steam Deck. Best effect when using a translucent back.  
+This Project uses a small microcontroller and some **WS2812B** LEDs (aka. NeoPixels or ARGB) to add RGB lighting to the back of the Steam Deck. Best effect when using a translucent back.  
 
 ![Front](https://user-images.githubusercontent.com/38454270/216425124-1bf0d9cd-a282-4135-b74b-2863e37c24a7.jpg)
 
 >## Huge thanks to [Adam Honse](https://github.com/CalcProgrammer1) for finding the I2C interface of the Steam Deck and implementing it into OpenRGB. 
 > You can find the I2C sketch for the Adafruit Trinket M0 on his [Github](https://gitlab.com/CalcProgrammer1/Arduino_I2C_NeoPixel_Controller/-/tree/adafruit_trinket_m0).  
 You can then use the Flatpack version from the Discover Store on the Steam Deck to control your LEDs.  
-You'll have to  enable I2C on the Steam Deck first though.  
-I'll update this guide in the next days to include the setup for OpenRGB. 
-I'll also updating some images and graphics to include easier soldering points since there seems to be SD revisions without the initially used probing points. 
+You'll have to enable I2C on the Steam Deck first.  
 
 >## Disclaimer:  
 > **This Project includes modification of the Steam Deck hardware and soldering of thin wires and small pads. Please be careful as to not damage your hardware.**  
@@ -29,52 +22,47 @@ This mod may also interfere with your WiFi or Bluetooth. I haven't encountered a
 
 ## Table of contents
 - [RGBDeck](#rgbdeck)
+  - [Introduction](#introduction)
   - [Table of contents](#table-of-contents)
   - [What is needed](#what-is-needed)
-  - [Preparing your microcontroller](#preparing-your-microcontroller)
+  - [Choice of the Microcontroller](#choice-of-microcontroller)
   - [Connecting the Microcontroller to your Steam Deck](#connecting-the-microcontroller-to-your-steam-deck)
   - [Adding the addressable LEDs](#adding-the-addressable-leds)
 
+## Introduction
+
+The Steam Deck provides an accessible I2C interface, which can be used to attach and control additional devices (Such as Haptic Motor Drivers, [Link](https://github.com/dawidmpunkt/rumble-for-steamdeck)).
+There have been attempts to attach RGB controllers to the steam Deck in order to control the RGB LED via Software from the Steam Deck ([Link](https://www.reddit.com/r/SteamDeck/comments/10uzoj6/openrgbdeck_lives_rgbdeck_mod_with_jsaux_cover/)). This project failed due to issues with the power supply, which either damaged the board ([LINK](https://old.reddit.com/r/SteamDeck/comments/110ca10/warning_about_the_rgbdeck_mod_from_last_weekavoid/)) or caused the Deck not to boot ([LINK](https://github.com/WUBBSY/RGBDeck/issues/1#issuecomment-1653933577)). The prior issue was due to the attempt to connect the RGB LEDs to the 5V rail, used to provide power to the controller boards. The 5V rail on the Steam Decks controller board is not designed to power additional high current devices (like RGB LEDs), thus resulting in components failing. The latter issue was due to the fact, that the external device was directly connected to the battery, thus (most likely) causing issues with the charging controller, which caused the Deck not to start up. Since it is (a) possible to either power the LEDs via an external power source (Battery) and (b) to attach the RGB controller to the Vsys Rail, the issues above can be considered as solved. In case of the Vsys rail, power can be drawn from close to the MAX77961 Battery Charging IC. According to the Datasheet of the charging IC ([LINK](https://www.analog.com/en/products/max77961.html)), it can output up to 10 A of current (if proper cooling is provided). Vsys on the Steam Deck is designed to be around 8.7 volts. The Steam Deck APU (if not modified in software) draws around 15 watts of power (around 2 amps of current at 8.7 volts) (according to gamescope data). The display draws around 5-6 Watts (< 1 amp). This should give enough headroom to power additional devices.  
 
 ## What is needed
 
-- A suitable microcontroller. (This example uses a Adafruit Trinket M0 mainly for it's size)
-- WS2812B LEDs (aka. NeoPixels or ARGB). A LED Strip is suitable since in can be mounted easily. 
+- A suitable microcontroller.
+- WS2812B LEDs (aka. NeoPixels or ARGB). A LED Strip is suitable since in can be mounted easily.
+- Buck converter or an external battery. 
 - thin wire best would be enamelled wire
 - Tools to open the Steam Deck (Philips Driver size 0 and a plastic spudger)
 - Soldering iron. Preferibly with a small tip since the pads are very small
 
-## Preparing your microcontroller
-For this example I'm using an [Adafruit Trinket M0](https://www.adafruit.com/product/3500) which is a very small and low cost microcontroller.  
-I'm also using CircuitPython for the program for ease of use. (I might add a Arduino example in the future)
+## Choice of the microcontroller to interface the WS2812 LEDs via I2C
 
-The Adafruit Trinket M0 comes preinstalled with CircuitPython but it is recommended to update it. Adafruit has a simple [guide](https://learn.adafruit.com/adafruit-trinket-m0-circuitpython-arduino/circuitpython) on how to update/install CircuitPython.  
-Additionally you'll need few libraries which can be downloaded from [circuitpython.org](https://circuitpython.org/libraries) (adafruit-circuitpython-bundle-7.x-mpy...)  
-After downloading the zip find these files inside the _lib_ folder:  
-- adafruit_dotstar.mpy
-- adafruit_pixelbuf.mpy
-- neopixel.mpy
+Since the WS2812 LEDs cannot be addressed via I2C directly, we need an additional device as an „I2C-bridge“. In the projects mentioned above, microcontrollers were used for this job. For this project, a microcontroller was chosen according to the following criteria:
+* Widely available
+* Cheap
+* Small size (to be integrated into the shell of the Steam Deck
+* Small power draw
+* Easy to program
 
-Copy these Files onto your micro into the _lib_ folder.  
-Then Download the _code.py_ and place it in the root directory of your micro. That's it.  
-(If you use more or less than 15 LEDs you should change the LED count in the code at line 12)
+In this project, 8-bit microcontrollers were chosen, due to being easier to program (for beginners) than their 32-bit counterparts.
+
+At this moment, the STM8S001S was chosen. further documentation is TODO
+
+### Failed attempts
+The Attiny85 was tested but the configuration was complicated and the Attiny performed unreliably. This is most likely due to the Attiny not having dedicated I2C Hardware, but I2C being bitbanged via software. The attiny could receive commands via i2c (tested by letting a LED, connected to an output pin, turn on/off on command), when the clock frequency was set to 16 MHz (it failed at 8 MHz), but there were difficulties in receiving the ACK signal from the attiny. 
 
 ## Connecting the Microcontroller to your Steam Deck
 
 We fist must remove the back cover of the Steam Deck. A handy guide can be found on [iFixit](https://www.ifixit.com/Guide/Steam+Deck+Back+Cover+Replacement/148893)  
 It is then advisable to disconnect the battery to minimize the risk of damage to the components. (Small [guide](https://www.ifixit.com/Guide/Steam+Deck+Battery+Replacement/149070) follow till step 7)  
-
-You now must solder 2 small leads to the left controller board. It's the one on the right with the large "L" and the buttons for the back buttons.  
-The negative connection is relatively simple since we can solder it onto the left pad of the lower button which is connected to the ground plane.  
-The positive connection is tricky. There is a small test pad a bit left and up from the lower button. This test pad is connected to the 5V rail of the controller. Carefully solder a thin wire to the pad.  
-After that you should fixate them with tape or glue them down.  
-
-![BoardView](https://user-images.githubusercontent.com/38454270/216419156-7a13e743-17e9-434c-b82c-dee827b108b5.png)
-
-Now just solder the two cables onto your micro and it should be powered by the Steam Deck.  
-![TrinketTop](https://user-images.githubusercontent.com/38454270/216419480-20282663-8417-4ced-b88d-65feef562de0.png)
-_Din_ is where you connect your LEDs.  
-The large white connector is just for testing purposes and is not needed. 
 
 ## Adding the addressable LEDs
 NeoPixels or ARGB LEDs contain a WS2812B chip which enables them to be individually controlled.  
@@ -84,8 +72,6 @@ _Din_ gets connected to Pin 4 or _D4_ on your micro.
 _Dout_ is the output of the last LED in array and you can connect more LEDs with _Din_ onto it.  
 
 After connecting all your LEDs, you mount them in the back half of your Steam Deck.  
-You can follow my setup or experiment with your own placement.  
-![BackView](https://user-images.githubusercontent.com/38454270/216421677-a8ab8128-7ac4-4c42-a9e7-88c4b2e85afa.jpg)
 
 **Be careful when attaching the LEDs to the Steam Deck to not short out any connections of the pcbs or the LEDs!**  
 
