@@ -6,8 +6,6 @@ Forked from WUBBSY - see here for the original Adafruit Trinket M0 version: http
 
 This Project uses a small microcontroller and some **WS2812B** LEDs (aka. NeoPixels or ARGB) to add RGB lighting to the back of the Steam Deck. Best effect when using a translucent back.  
 
-![Front](https://user-images.githubusercontent.com/38454270/216425124-1bf0d9cd-a282-4135-b74b-2863e37c24a7.jpg)
-
 >## Huge thanks to [Adam Honse](https://github.com/CalcProgrammer1) for finding the I2C interface of the Steam Deck and implementing it into OpenRGB. 
 > You can find the I2C sketch for the Adafruit Trinket M0 on his [Github](https://gitlab.com/CalcProgrammer1/Arduino_I2C_NeoPixel_Controller/-/tree/adafruit_trinket_m0).  
 You can then use the Flatpack version from the Discover Store on the Steam Deck to control your LEDs.  
