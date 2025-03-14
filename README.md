@@ -37,7 +37,7 @@ The 5V rail on the Steam Decks controller board is not designed to power additio
 
 Since it is (a) possible to either power the LEDs via an external power source (Battery) and (b) to attach the RGB controller to the Vsys rail, the issues above can be considered as solved (as demonstrated in the rumble-for-steamdeck project). 
 
-In case of the Vsys rail, power can be drawn from close to the Vsys output of the MAX77961 Battery Charging IC. According to the Datasheet of the charging IC ([LINK](https://www.analog.com/en/products/max77961.html)), it can output up to 10 A of current (if proper cooling is provided). 
+In case of the Vsys rail, power can be drawn (via a buck converter) from close to the Vsys output of the MAX77961 Battery Charging IC. According to the Datasheet of the charging IC ([LINK](https://www.analog.com/en/products/max77961.html)), it can output up to 10 A of current (if proper cooling is provided). 
 
 Vsys on the Steam Deck is designed to be around 8.7 volts. The Steam Deck APU (if not modified in software) draws around 15 watts of power (around 2 amps of current at 8.7 volts) (according to gamescope data). The display draws around 5-6 Watts (< 1 amp). This should give enough headroom to power additional devices.  
 
