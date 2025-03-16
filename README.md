@@ -72,6 +72,11 @@ The Attiny85 was tested but the configuration was complicated and the Attiny per
 We fist must remove the back cover of the Steam Deck. A handy guide can be found on [iFixit](https://www.ifixit.com/Guide/Steam+Deck+Back+Cover+Replacement/148893)  
 It is then advisable to disconnect the battery to minimize the risk of damage to the components. (Small [guide](https://www.ifixit.com/Guide/Steam+Deck+Battery+Replacement/149070) follow till step 7)  
 
+You can either solder a small developer board like 
+
+I designed a PCB that can be plugged into the Steam Decks Audio Board. You can view the Schematic here:
+https://github.com/dawidmpunkt/RGBDeck/Schematics/RGBBoard_STM8S001_v0.1.png
+
 ## Adding the addressable LEDs
 NeoPixels or ARGB LEDs contain a WS2812B chip which enables them to be individually controlled.  
 These LEDs have 4 contacts _+5V_, _Din_, _Dout_, _GND_.  
